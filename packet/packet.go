@@ -1,60 +1,66 @@
 package packet
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/binary"
+	"errors"
 )
 
 // Packet 包
 type Packet struct {
 	// Head 头
-	Head Head
-	// Type 类型
-	Type Type
+	head *Head
 	// Data 数据
-	Data []byte
-	// DataLenght 数据长度
-	DataLenght int
+	data []byte
+}
+
+// Bytes 获取数据
+func (p *Packet) Bytes() []byte {
+	buffer := &bytes.Buffer{}
+	// 类型
+	buffer.WriteByte(p.head.Type)
+	// 长度
+	binary.Write(buffer, binary.BigEndian, int32(p.head.DataLenght))
+	// 数据
+	if p.data != nil {
+		buffer.Write(p.data)
+	}
+	return buffer.Bytes()
 }
 
 // New 创建包
-func New([]byte) *Packet {
-	return &Packet{}
-}
-
-// News 创建多个包
-func News([]byte) []*Packet {
-	return nil
+func New(data []byte) (*Packet, error) {
+	lenght := len(data)
+	if lenght == 0 {
+		return nil, errors.New("data is null")
+	}
+	return &Packet{
+		head: &Head{
+			Type:       TypeData,
+			DataLenght: lenght,
+		},
+		data: data,
+	}, nil
 }
 
 // NewQrs 创建一个心跳包
-func NewQrs(lenght int) (*Packet, error) {
-	if lenght < 2 {
-		return nil, fmt.Errorf("qrs packet lenght:%d,error", lenght)
-	}
-	data := make([]byte, lenght-2)
+func NewQrs() *Packet {
 	return &Packet{
-		Head:       HeadClosure,
-		Type:       TypeQrs,
-		Data:       data,
-		DataLenght: 0,
-	}, nil
+		head: &Head{
+			Type:       TypeQrs,
+			DataLenght: 0,
+		},
+		data: nil,
+	}
 }
 
 // NewClose 创建一个关闭包
-func NewClose(lenght int) (*Packet, error) {
-	if lenght < 2 {
-		return nil, fmt.Errorf("close packet lenght:%d,error", lenght)
-	}
-	data := make([]byte, lenght-2)
+func NewClose() *Packet {
 	return &Packet{
-		Head:       HeadClosure,
-		Type:       TypeClose,
-		Data:       data,
-		DataLenght: 0,
-	}, nil
-}
-
-// Bytes 字节
-func (p *Packet) Bytes() []byte {
-	return nil
+		head: &Head{
+			Type:       TypeClose,
+			DataLenght: 0,
+		},
+		data: nil,
+	}
 }
