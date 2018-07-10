@@ -18,10 +18,10 @@ type Client struct {
 }
 
 // New 创建客户端
-func New(id string, conn *net.Conn) *Client {
+func New(id string, conn net.Conn) *Client {
 	return &Client{
 		ID:                id,
-		Connection:        *conn,
+		Connection:        conn,
 		LastHeartbeatTime: time.Now(),
 	}
 }
@@ -29,11 +29,4 @@ func New(id string, conn *net.Conn) *Client {
 // Send 发送
 func (c *Client) Send(p *packet.Packet) {
 	c.Connection.Write(p.Bytes())
-}
-
-// Sends 发送多个
-func (c *Client) Sends(ps []*packet.Packet) {
-	for i := 0; i < len(ps); i++ {
-		c.Send(ps[i])
-	}
 }

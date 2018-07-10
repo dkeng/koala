@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+
+	"github.com/dkeng/pkg/convert"
 )
 
 // Packet 包
@@ -28,8 +30,18 @@ func (p *Packet) Bytes() []byte {
 	return buffer.Bytes()
 }
 
-// New 创建包
-func New(data []byte) (*Packet, error) {
+// GetHead 获取head
+func (p *Packet) GetHead() *Head {
+	return p.head
+}
+
+// GetData 获取data
+func (p *Packet) GetData() []byte {
+	return p.data
+}
+
+// NewSend 创建发送包
+func NewSend(data []byte) (*Packet, error) {
 	lenght := len(data)
 	if lenght == 0 {
 		return nil, errors.New("data is null")
@@ -40,6 +52,25 @@ func New(data []byte) (*Packet, error) {
 			DataLenght: lenght,
 		},
 		data: data,
+	}, nil
+}
+
+// NewReceive 创建接受包
+func NewReceive(data []byte) (*Packet, error) {
+	lenght := len(data)
+	if lenght == 0 {
+		return nil, errors.New("data is null")
+	}
+	if lenght < 5 {
+		return nil, errors.New("data is error")
+	}
+	dataLenght := convert.BytesToInt(data[1:5])
+	return &Packet{
+		head: &Head{
+			Type:       data[0],
+			DataLenght: dataLenght,
+		},
+		data: data[5 : 5+dataLenght],
 	}, nil
 }
 
