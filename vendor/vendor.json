@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "EpHeeZUpvy6NUBzjQGPMHSTokec=",
+			"path": "github.com/dkeng/pkg/convert",
+			"revision": "529822ddccb71bbf31037d1fb67dca2608c5f927",
+			"revisionTime": "2018-07-10T08:45:01Z"
+		}
+	],
+	"rootPath": "github.com/dkeng/koala"
+}
