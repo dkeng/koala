@@ -27,6 +27,10 @@ func New(id string, conn net.Conn) *Client {
 }
 
 // Send 发送
-func (c *Client) Send(p *packet.Packet) {
-	c.Connection.Write(p.Bytes())
+func (c *Client) Send(p *packet.Packet) error {
+	_, err := c.Connection.Write(p.Bytes())
+	if err != nil {
+		return err
+	}
+	return nil
 }
