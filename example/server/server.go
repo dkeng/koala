@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	server "github.com/dkeng/koala-mini-server"
+	server "github.com/dkeng/koala/server"
 )
 
 var (
@@ -28,7 +28,7 @@ func main() {
 	}
 	koalaServer.ReceiveEvent = func(value []byte) {
 		fmt.Printf("ReceiveEvent:\n%v\n", string(value))
-		fmt.Printf("客户端数量:\n%v\n", len(koalaServer.Clients))
+		fmt.Printf("客户端数量:\n%v\n", koalaServer.GetClientCount())
 	}
 	koalaServer.ListenAndServe()
 }

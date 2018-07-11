@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/dkeng/koala-mini-server/packet"
+	"github.com/dkeng/koala/packet"
 )
 
 // Client 客户端

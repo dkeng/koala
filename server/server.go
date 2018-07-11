@@ -6,9 +6,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/dkeng/koala-mini-server/client"
-	"github.com/dkeng/koala-mini-server/errors"
-	"github.com/dkeng/koala-mini-server/packet"
+	"github.com/dkeng/koala/errors"
+	"github.com/dkeng/koala/packet"
+	"github.com/dkeng/koala/server/client"
+	"github.com/dkeng/koala/server/event"
 	"github.com/dkeng/pkg/convert"
 )
 
@@ -20,13 +21,13 @@ type KoalaServer struct {
 	clients  map[string]*client.Client
 	listener net.Listener
 	// 日志事件
-	LogEvent LogEvent
+	LogEvent event.LogEvent
 	// 接受事件
-	AcceptEvent AcceptEvent
+	AcceptEvent event.AcceptEvent
 	// 收到客户端消息
-	ReceiveEvent ReceiveEvent
+	ReceiveEvent event.ReceiveEvent
 	// 客户端连接关闭事件
-	ClientConnCloseEvent ClientConnCloseEvent
+	ClientConnCloseEvent event.ClientConnCloseEvent
 	// 缓冲区大小 默认1024
 	BufferLength int
 	// 服务器状态
@@ -160,6 +161,11 @@ func (k *KoalaServer) CloseClient(clientID string) error {
 		return errors.ErrClientNotFound
 	}
 	return nil
+}
+
+// GetClientCount 获取客户端数量
+func (k *KoalaServer) GetClientCount() int {
+	return len(k.clients)
 }
 
 // SendClient 发送消息给客户端

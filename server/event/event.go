@@ -1,4 +1,4 @@
-package server
+package event
 
 // LogEvent log 事件
 type LogEvent func(string, interface{})

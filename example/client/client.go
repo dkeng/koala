@@ -5,7 +5,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/dkeng/koala-mini-server/packet"
+	"github.com/dkeng/koala/packet"
 )
 
 const (
