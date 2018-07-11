@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 
@@ -10,7 +9,12 @@ import (
 )
 
 const (
-	str = "-abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz-"
+	str = "-abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyzabcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz|abcdefghijklmnopqistuvwxyz-"
+)
+
+var (
+	conns []*net.TCPConn
+	cchan = make(chan int)
 )
 
 func main() {
@@ -19,25 +23,22 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	conn, err := net.DialTCP("tcp", nil, tcpAddr)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	for i := 0; i < 3; i++ {
-		p, err := packet.NewSend([]byte(str))
+	for i := 0; i < 1024; i++ {
+		conn, err := net.DialTCP("tcp", nil, tcpAddr)
 		if err != nil {
 			fmt.Println(err)
-			return
+		} else {
+			conns = append(conns, conn)
 		}
-		fmt.Println(i)
-		conn.Write(p.Bytes())
 	}
-	fmt.Println("发送成功")
-	result, err := ioutil.ReadAll(conn)
+	p, err := packet.NewSend([]byte(str))
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		return
 	}
-	fmt.Println(string(result))
+	for i, conn := range conns {
+		conn.Write(p.Bytes())
+		fmt.Println(i)
+	}
+	<-cchan
 }
